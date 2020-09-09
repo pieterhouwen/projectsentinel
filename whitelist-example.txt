@@ -1,0 +1,9 @@
+# This file contains the whitelisted IP's for which we don't need to send a push notification
+
+# Work IP
+# 123.123.123.123
+
+# Home IP
+# 123.123.123.123
+
+

@@ -1,0 +1,43 @@
+#!/bin/bash
+
+function RTFM() {
+echo Usage: $0 \[ login \| \<other app\> \]
+echo
+echo Sends a push notification to phone.
+exit 1
+}
+
+function sendmsg() {
+case $1 in
+login)
+ case $2 in
+  *)
+   case $3 in
+    *)
+     user=$2
+     ipadr=$3
+    ;;
+    esac
+   ;;
+   esac
+  # Set the priority to make it appear on lockscreen
+  # Priority "anything higher than 7"\ is highest
+  curl -X POST "https://push.domain.tld/message?token=<messagetoken>" -F "title=Login notificaiton" -F "message=Login detected for user $user at IP $ipadr" -F "priority=7"
+  ;;
+ *)
+ echo Invalid args!
+ RTFM
+ exit 1
+ ;;
+ esac
+}
+
+case $1 in
+login)
+ if grep $3 /opt/projectsentinel/whitelist.txt >/dev/null; then
+   :
+ else
+   sendmsg login $2 $3
+ fi
+;;
+esac
