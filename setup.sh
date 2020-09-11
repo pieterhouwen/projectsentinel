@@ -25,6 +25,8 @@ if dpkg --get-selections | grep nginx >/dev/null; then
     apt install nginx -y
     systemctl enable --now nginx
 fi
+  echo Please enter your FQDN on which to publish the push server.
+  read server
   echo Writing nginx conf
   cat <<EOF >>/etc/nginx.conf
   server {
@@ -55,6 +57,8 @@ fi
     proxy_read_timeout      7m;
   }
 EOF
-
+  echo Grabbing service template
+  wget https://pieterhouwen.info/zooi/servicetemplate.txt -O /tmp/servicetemplate
+  set -i 's/dir=""/dir="/opt/projectsentinel"'
   echo Starting server
   docker run -p 12345:80 -v /var/gotify/data:/app/data gotify/server
