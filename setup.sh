@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Test
 # First check privileges
 if [[ $(id -u) -lt 0 ]]; then
   echo Please run as root!
