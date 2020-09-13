@@ -1,16 +1,24 @@
 #!/bin/bash
-# Test
+
 # First check privileges
-if [[ $(id -u) -lt 0 ]]; then
+if [[ $(id -u) -gt 0 ]]; then
   echo Please run as root!
   exit 1
 fi
 
-echo Updating package repository
-apt update -q
+
+
+if [[ -e /usr/bin/apt ]]; then
+querypkg="dpkg --get-selections | grep "
+installpkg="apt install "
+elif [[ -e /usr/bin/pacman ]]; then
+ querypkg="pacman -Q"
+ installpkg="pacman -S"
+fi
+
 
 # Check installation of Docker
-if dpkg --get-selections | grep docker >/dev/null; then
+if $querypkg docker >/dev/null; then
   # Looks like docker is installed
   echo Found docker
 else
@@ -18,11 +26,11 @@ else
   curl https://get.docker.com | /bin/sh
 fi
   # Check for nginx
-if dpkg --get-selections | grep nginx >/dev/null; then
+if $querypkg | grep nginx >/dev/null; then
     # Looks like nginx was found
     echo Found nginx
   else
-    apt install nginx -y
+    $installpkg nginx
     systemctl enable --now nginx
 fi
   echo Please enter your FQDN on which to publish the push server.
@@ -59,6 +67,6 @@ fi
 EOF
   echo Grabbing service template
   wget https://pieterhouwen.info/zooi/servicetemplate.txt -O /tmp/servicetemplate
-  set -i 's/dir=""/dir="/opt/projectsentinel"'
+  sed -i 's/dir=""/dir="/opt/projectsentinel"' /tmp/servicetemplate
   echo Starting server
   docker run -p 12345:80 -v /var/gotify/data:/app/data gotify/server
