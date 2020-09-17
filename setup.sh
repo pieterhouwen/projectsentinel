@@ -67,6 +67,8 @@ fi
 EOF
   echo Grabbing service template
   wget https://pieterhouwen.info/zooi/servicetemplate.txt -O /tmp/servicetemplate
-  sed -i 's/dir=""/dir="/opt/projectsentinel"' /tmp/servicetemplate
+  sed -i 's/dir=""/dir="\/opt\/projectsentinel"' /tmp/servicetemplate
+  sed -i 's/cmd=""/cmd="\/opt\/projectsentinel\/accepted.sh"' /tmp/servicetemplate
+  sed -i 's/user=""/user="root"' /tmp/servicetemplate
   echo Starting server
   docker run -p 12345:80 -v /var/gotify/data:/app/data gotify/server
