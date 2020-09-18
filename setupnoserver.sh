@@ -6,11 +6,11 @@ echo
 echo Please enter FQDN of the host that is running Gotify
 read gotify_server
 echo Selected $gotify_server
-echo Please enter port (will default to 443 if left blank)
-read gotify_port
-if [[ -z $gotify_port ]]; then
-  $gotify_addr="https://$gotify_server"
-fi
+#echo Please enter port (will default to 443 if left blank)
+#read gotify_port
+#if [[ -z $gotify_port ]]; then
+#  $gotify_addr="https://$gotify_server"
+#fi
 function readuserinfo() {
   read -p "Username:" gotify_username
   echo
@@ -31,3 +31,12 @@ if echo $response | grep Unauthorized >/dev/null; then
   echo Wrong username or password!
   echo Please try again.
   readuserinfo
+elif echo $response | grep "Could not resolve host" >/dev/null; then
+  echo Invalid host selected! Please select a different host!
+  exit 1
+elif ! echo $response | grep token ; then
+  echo Unknown error occured
+  exit 1
+else
+  echo Login succesful
+fi
