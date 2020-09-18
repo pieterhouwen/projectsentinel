@@ -42,7 +42,10 @@ else
 fi
 
 # Declare some variables
-appid=$(echo $response | cut -d "," -n )
+appid=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep id | cut -d ":" -f 2)
+apptoken=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep token | cut -d ":" -f 2)
+appname=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep name | cut -d ":" -f 2)
+appdesc=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep description | cut -d ":" -f 2)
 
 # Now let's make the output prettier, let's build a nice menu to choose from.
 
@@ -53,6 +56,9 @@ for i in "$@"
 do
 N=$(expr $N + 1)
 echo Option $N is: $i
+echo Application name: $appname
+echo Application description: $appdesc
+echo Application token: $apptoken
 done
 echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 }
