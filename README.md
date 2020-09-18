@@ -17,3 +17,9 @@ Depending on the prospected usage this can be as small a machine as you'd like.
 
 # Requirements project sentinel without gotify server
 Basically anything, this project has been tested on Arch Linux but should be compatible with Ubuntu also.
+
+# TODO
+* Enable option to change port in gotify server selection.
+* Standardize for Docker images
+* SMART support?
+* Disk space checking

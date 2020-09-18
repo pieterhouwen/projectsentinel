@@ -11,7 +11,9 @@ read gotify_port
 if [[ -z $gotify_port ]]; then
   $gotify_addr="https://$gotify_server"
 fi
-function readpass() {
+function readuserinfo() {
+  read -p "Username:" gotify_username
+  echo
   read -sp Password: gotify_password
   echo
   read -sp "Again to confirm:" gotify_password_conf
@@ -19,11 +21,13 @@ function readpass() {
   if [[ $gotify_password != $gotify_password_conf ]];then
     echo Passwords don\'t match!
     echo
-    readpass
+    readuserinfo
   fi
 }
-readpass
+readuserinfo
 echo Trying to login using specified details
 response=$(curl -u $gotify_username:$gotify_password https://$gotify_server/application)
-if grep Unauthorized $response; then
+if echo $response | grep Unauthorized >/dev/null; then
   echo Wrong username or password!
+  echo Please try again.
+  readuserinfo
