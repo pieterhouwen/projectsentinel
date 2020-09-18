@@ -34,9 +34,25 @@ if echo $response | grep Unauthorized >/dev/null; then
 elif echo $response | grep "Could not resolve host" >/dev/null; then
   echo Invalid host selected! Please select a different host!
   exit 1
-elif ! echo $response | grep token ; then
+elif [[ ! echo $response | grep token ]]; then
   echo Unknown error occured
   exit 1
 else
   echo Login succesful
 fi
+
+# Declare some variables
+appid=$(echo $response | cut -d "," -n )
+
+# Now let's make the output prettier, let's build a nice menu to choose from.
+
+function buildmenu () {
+echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+N=0
+for i in "$@"
+do
+N=$(expr $N + 1)
+echo Option $N is: $i
+done
+echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+}
