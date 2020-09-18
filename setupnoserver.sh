@@ -9,7 +9,21 @@ echo Selected $gotify_server
 echo Please enter port (will default to 443 if left blank)
 read gotify_port
 if [[ -z $gotify_port ]]; then
-  $gotify_port = "443"
+  $gotify_addr="https://$gotify_server"
 fi
-
-echo
+function readpass() {
+  read -sp Password: gotify_password
+  echo
+  read -sp "Again to confirm:" gotify_password_conf
+  echo
+  if [[ $gotify_password != $gotify_password_conf ]];then
+    echo Passwords don\'t match!
+    echo
+    readpass
+  fi
+}
+readpass
+echo Trying to login using specified details
+response=$(curl -u $gotify_username:$gotify_password https://$gotify_server/application)
+if grep Unauthorized $response; then
+  echo Wrong username or password!
