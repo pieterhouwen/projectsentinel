@@ -26,7 +26,7 @@ function readuserinfo() {
 }
 readuserinfo
 echo Trying to login using specified details
-response=$(curl -u $gotify_username:$gotify_password https://$gotify_server/application)
+response=$(curl -u $gotify_username:$gotify_password https://$gotify_server/application | jq)
 if echo $response | grep Unauthorized >/dev/null; then
   echo Wrong username or password!
   echo Please try again.
@@ -39,15 +39,15 @@ else
 fi
 
 # Declare some variables
-appall=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"")
-appid=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep id | cut -d ":" -f 2)
-apptoken=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep token | cut -d ":" -f 2)
-appname=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep name | cut -d ":" -f 2)
-appdesc=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep description | cut -d ":" -f 2)
+# appall=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"")
+# appid=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep id | cut -d ":" -f 2)
+# apptoken=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep token | cut -d ":" -f 2)
+# appname=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep name | cut -d ":" -f 2)
+# appdesc=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep description | cut -d ":" -f 2)
 
 # Now let's make the output prettier, let's build a nice menu to choose from.
 
-
+function buildmenu() {
 echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 N=0
 for i in "${appall[@]}"
@@ -59,3 +59,23 @@ echo Application token: $apptoken[$N]
 N=$(expr $N + 1)
 done
 echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+}
+
+function getapptoken() {
+echo Your currently active applications are:
+curl -u $gotify_username:$gotify_password https://$gotify_server/application | jq
+read -p "Please enter your apptoken: " apptoken
+}
+getapptoken
+
+function testapptoken() {
+echo Apptoken set to $apptoken .
+echo Trying to send message using apptoken
+testresponse=$(curl -X POST https://$gotify_server/message?token=$apptoken -F "title=Testnotification" -F "message=If you're seeing this the app is correctly configured" -F "priority=8")
+if echo $testresponse | grep "provide a valid access token"; then
+echo Invalid token set!
+getapptoken
+testapptoken
+fi
+}
+testapptoken
