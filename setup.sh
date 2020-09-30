@@ -67,7 +67,7 @@ fi
 EOF
 ln -s /etc/nginx/sites-available/$server.conf /etc/nginx/sites-enabled/$server.conf
 echo Starting server
-docker run -p 12345:80 -v /var/gotify/data:/app/data gotify/server
+docker run -p 12345:80 -v /opt/projectsentinel/data:/app/data gotify/server
 
   echo Grabbing service template
   if [[ -e /usr/bin/systemd ]]; then
@@ -81,7 +81,7 @@ docker run -p 12345:80 -v /var/gotify/data:/app/data gotify/server
     update-rc.d loginpush defaults
     service loginpush start
     echo If all was well the daemon should be active and started at boot.
-  elif [[ -e /usr/bin/systemctl ]]; then
+  elif [[ -d /lib/systemd/system ]]; then
     wget https://pieterhouwen.info/zooi/systemctltemplate.txt -O /tmp/systemctltemplate
     sed -i 's/command/\/opt\/projectsentinel\/accepted.sh' /tmp/systemctltemplate
     sed -i 's/desk/Sends push notifications to phone' /tmp/systemctltemplate
