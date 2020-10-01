@@ -83,13 +83,19 @@ fi
 }
 testapptoken
 
+# Let's create a menu for our sevices
+
+funciton enablesshnotifications() {
+
+}
+
 buildmenu "SSH login detection" "SMART notifications"
 read -p "Please select your desired service" menunumber
 case $menunumber in
   1)
-  enablesshnotifications
+#  enablesshnotifications
   ;;
   2)
-  enablesmartnotifications
+#  enablesmartnotifications
   ;;
 esac
