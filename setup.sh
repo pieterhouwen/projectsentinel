@@ -93,5 +93,3 @@ elif [[ -d /lib/systemd/system ]]; then
     systemctl enable loginpush
 
 fi
-
-
