@@ -1,4 +1,23 @@
 #!/bin/bash
+
+# Check for root
+if [[ $(id -u) -gt 0 ]]; then
+  echo Please run as root!
+  exit 1
+fi
+
+# Check for JQ
+if [[ -e /usr/bin/jq ]]; then
+  :
+else
+  if [[ -e /usr/bin/pacman ]]; then
+    pacman -Sy jq
+  elif [[ -e /usr/bin/apt ]]; then
+    apt update -q
+    apt install -y jq
+  fi
+fi
+
 echo Use this file if you already have a gotify server up and running.
 echo
 echo For starters we need to declare some variables
@@ -85,7 +104,7 @@ testapptoken
 
 # Let's create a menu for our sevices
 
-funciton enablesshnotifications() {
+function enablesshnotifications() {
 
 }
 
