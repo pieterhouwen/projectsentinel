@@ -26,7 +26,7 @@ function readuserinfo() {
 }
 readuserinfo
 echo Trying to login using specified details
-response=$(curl -u $gotify_username:$gotify_password https://$gotify_server/application)
+response=$(curl -u $gotify_username:$gotify_password https://$gotify_server/application | jq)
 if echo $response | grep Unauthorized >/dev/null; then
   echo Wrong username or password!
   echo Please try again.
@@ -39,13 +39,19 @@ else
 fi
 
 # Declare some variables
-appid=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep id | cut -d ":" -f 2 | tr " " "\n")
-apptoken=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep token | cut -d ":" -f 2 | tr " " "\n")
-appname=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep name | cut -d ":" -f 2 | tr " " "\n")
-appdesc=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep description | cut -d ":" -f 2 | tr " " "\n")
 
+# If I make everything a comment no one will see it, right?
+# Took me 5 hours to comment below out and move to a different approach.
+
+# appall=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"")
+# appid=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep id | cut -d ":" -f 2)
+# apptoken=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep token | cut -d ":" -f 2)
+# appname=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep name | cut -d ":" -f 2)
+# appdesc=$(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep description | cut -d ":" -f 2)
 
 # Now let's make the output prettier, let's build a nice menu to choose from.
+
+
 
 function buildmenu () {
 echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
@@ -54,10 +60,42 @@ for i in $(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep id | cut -d 
 do
 N=$(expr $N + 1)
 echo Option $N is: $i
-echo Application name: $appname
-echo Application description: $appdesc
-echo Application token: $apptoken
 done
 echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 }
-buildmenu
+
+function getapptoken() {
+echo Your currently active applications are:
+curl -u $gotify_username:$gotify_password https://$gotify_server/application | jq
+read -p "Please enter your app token: " apptoken
+}
+getapptoken
+
+function testapptoken() {
+echo Apptoken set to $apptoken .
+echo Trying to send message using apptoken
+testresponse=$(curl -X POST https://$gotify_server/message?token=$apptoken -F "title=Testnotification" -F "message=If you're seeing this the app is correctly configured" -F "priority=8" >/dev/null)
+if echo $testresponse | grep "provide a valid access token"; then
+echo Invalid token set!
+getapptoken
+testapptoken
+fi
+}
+testapptoken
+
+# Let's create a menu for our sevices
+
+funciton enablesshnotifications() {
+
+}
+
+buildmenu "SSH login detection" "SMART notifications"
+read -p "Please select your desired service" menunumber
+case $menunumber in
+  1)
+#  enablesshnotifications
+  ;;
+  2)
+#  enablesmartnotifications
+  ;;
+esac

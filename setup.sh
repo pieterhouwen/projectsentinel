@@ -36,7 +36,7 @@ fi
   echo Please enter your FQDN on which to publish the push server.
   read server
   echo Writing nginx conf
-  cat <<EOF >>/etc/nginx.conf
+  cat <<EOF >>/etc/nginx/sites-available/$server.conf
   server {
 
   # Here goes your domain / subdomain
@@ -65,10 +65,27 @@ fi
     proxy_read_timeout      7m;
   }
 EOF
+ln -s /etc/nginx/sites-available/$server.conf /etc/nginx/sites-enabled/$server.conf
+echo Starting server
+docker run -p 12345:80 -v /opt/projectsentinel/data:/app/data gotify/server
+
   echo Grabbing service template
-  wget https://pieterhouwen.info/zooi/servicetemplate.txt -O /tmp/servicetemplate
-  sed -i 's/dir=""/dir="\/opt\/projectsentinel"' /tmp/servicetemplate
-  sed -i 's/cmd=""/cmd="\/opt\/projectsentinel\/accepted.sh"' /tmp/servicetemplate
-  sed -i 's/user=""/user="root"' /tmp/servicetemplate
-  echo Starting server
-  docker run -p 12345:80 -v /var/gotify/data:/app/data gotify/server
+  if [[ -e /usr/bin/systemd ]]; then
+    wget https://pieterhouwen.info/zooi/servicetemplate.txt -O /tmp/servicetemplate
+    sed -i 's/dir=""/dir="\/opt\/projectsentinel"' /tmp/servicetemplate
+    sed -i 's/cmd=""/cmd="\/opt\/projectsentinel\/accepted.sh"' /tmp/servicetemplate
+    sed -i 's/user=""/user="root"' /tmp/servicetemplate
+    echo Installing and enabling service
+    mv /tmp/servicetemplate /etc/init.d/loginpush
+    chmod +x /etc/init.d/loginpush
+    update-rc.d loginpush defaults
+    service loginpush start
+    echo If all was well the daemon should be active and started at boot.
+  elif [[ -d /lib/systemd/system ]]; then
+    wget https://pieterhouwen.info/zooi/systemctltemplate.txt -O /tmp/systemctltemplate
+    sed -i 's/command/\/opt\/projectsentinel\/accepted.sh' /tmp/systemctltemplate
+    sed -i 's/desk/Sends push notifications to phone' /tmp/systemctltemplate
+    echo Installing and enabling service
+    mv /tmp/systemctltemplate /lib/systemd/system/loginpush
+    systemctl enable loginpush
+fi
