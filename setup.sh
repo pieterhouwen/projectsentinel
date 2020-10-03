@@ -9,11 +9,11 @@ fi
 
 
 if [[ -e /usr/bin/apt ]]; then
-querypkg="dpkg --get-selections | grep "
-installpkg="apt install "
+  querypkg="dpkg --get-selections | grep "
+  installpkg="apt install "
 elif [[ -e /usr/bin/pacman ]]; then
- querypkg="pacman -Q"
- installpkg="pacman -S"
+  querypkg="pacman -Q"
+  installpkg="pacman -S"
 fi
 
 
@@ -27,11 +27,11 @@ else
 fi
   # Check for nginx
 if $querypkg | grep nginx >/dev/null; then
-    # Looks like nginx was found
-    echo Found nginx
-  else
-    $installpkg nginx
-    systemctl enable --now nginx
+  # Looks like nginx was found
+  echo Found nginx
+else
+  $installpkg nginx
+  systemctl enable --now nginx
 fi
   echo Please enter your FQDN on which to publish the push server.
   read server
@@ -65,12 +65,14 @@ fi
     proxy_read_timeout      7m;
   }
 EOF
+
 ln -s /etc/nginx/sites-available/$server.conf /etc/nginx/sites-enabled/$server.conf
 echo Starting server
 docker run -p 12345:80 -v /opt/projectsentinel/data:/app/data gotify/server
 
-  echo Grabbing service template
-  if [[ -e /usr/bin/systemd ]]; then
+echo Grabbing service template
+
+if [[ -e /usr/bin/systemd ]]; then
     wget https://pieterhouwen.info/zooi/servicetemplate.txt -O /tmp/servicetemplate
     sed -i 's/dir=""/dir="\/opt\/projectsentinel"' /tmp/servicetemplate
     sed -i 's/cmd=""/cmd="\/opt\/projectsentinel\/accepted.sh"' /tmp/servicetemplate
@@ -81,11 +83,15 @@ docker run -p 12345:80 -v /opt/projectsentinel/data:/app/data gotify/server
     update-rc.d loginpush defaults
     service loginpush start
     echo If all was well the daemon should be active and started at boot.
-  elif [[ -d /lib/systemd/system ]]; then
+
+elif [[ -d /lib/systemd/system ]]; then
     wget https://pieterhouwen.info/zooi/systemctltemplate.txt -O /tmp/systemctltemplate
     sed -i 's/command/\/opt\/projectsentinel\/accepted.sh' /tmp/systemctltemplate
     sed -i 's/desk/Sends push notifications to phone' /tmp/systemctltemplate
     echo Installing and enabling service
     mv /tmp/systemctltemplate /lib/systemd/system/loginpush
     systemctl enable loginpush
+
 fi
+
+
