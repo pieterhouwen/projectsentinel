@@ -22,11 +22,11 @@ login)
    esac
   # Set the priority to make it appear on lockscreen
   # Priority "anything higher than 7"\ is highest
-  curl -X POST "https://push.domain.tld/message?token=<apptoken>" -F "title=Login notificaiton" -F "message=Login detected for user $user at IP $ipadr" -F "priority=7"
+  curl -X POST "https://push.domain.tld/message?token=apptoken" -F "title=Login notificaiton" -F "message=Login detected for user $user at IP $ipadr" -F "priority=7"
   ;;
   smart)
   drive=$1
-  curl -X POST "https://push.domain.tld/message?token=<apptoken>" -F "title=SMART notification" -F "message=Drive $drive returned not PASSED, investigate." -F "priority=7"
+  curl -X POST "https://push.domain.tld/message?token=apptoken" -F "title=SMART notification" -F "message=Drive $drive returned not PASSED, investigate." -F "priority=7"
   ;;
  *)
  echo Invalid args!
