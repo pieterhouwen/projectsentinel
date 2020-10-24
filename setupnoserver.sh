@@ -167,6 +167,7 @@ function enablesmartnotifications() {
     elif smartctl -H $disk | grep -i "lacks smart capabilities" >/dev/null; then
       echo SMART is not supported on $disk. Bye.
       exit 1
+    fi
   }
 
 buildmenu "SSH login detection" "SMART notifications"
