@@ -75,7 +75,7 @@ fi
 function buildmenu () {
 echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 N=0
-for i in $(echo $response | tr "," "\n" | tr -d "\{\}\[\]\"" | grep id | cut -d ":" -f 2 | tr " " "\n" )
+for i in "$@"
 do
 N=$(expr $N + 1)
 echo Option $N is: $i
@@ -146,7 +146,7 @@ function enablesmartnotifications() {
   else
     echo Checking disk for SMART capabilities
     # Check for smartctl
-    if [[ -e /usr/bin/smartctl ]]; then
+    if [[ -e /usr/sbin/smartctl ]]; then
       :
     else
       if [[ -e /usr/bin/pacman ]]; then
@@ -167,7 +167,7 @@ function enablesmartnotifications() {
       echo You will have to set this up yourself.
       fi
     fi
-    if smartctl -H $disk | grep -i "lacks smart capabilities" >/dev/null; then
+    if smartctl -H $disk | grep -i "lacks smart capability" >/dev/null; then
       echo SMART is not supported on $disk. Bye.
       exit 1
     else
