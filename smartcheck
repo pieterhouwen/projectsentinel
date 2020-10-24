@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ smartctl -H $1 | grep PASSED ]]; then
+if smartctl -H $1 | grep PASSED >/dev/null ; then
 :
 else
 /usr/bin/sendpush smart $1
