@@ -105,16 +105,77 @@ testapptoken
 # Let's create a menu for our sevices
 
 function enablesshnotifications() {
+  echo Copying sendpush to /usr/bin
+  cp sendpush /usr/bin/sendpush
+  if [[ ! -d /opt/projectsentinel ]]; then
+    echo Project sentinel folder not found, creating it.
+    mkdir /opt/projectsentinel
+  fi
+  cp accepted.sh /opt/projectsentinel/accepted.sh
+  if [[ -e /usr/bin/systemd ]]; then
+      wget https://pieterhouwen.info/zooi/servicetemplate.txt -O /tmp/servicetemplate
+      sed -i 's/dir=""/dir=\/opt\/projectsentinel/' /tmp/servicetemplate
+      sed -i 's/cmd=""/cmd=\/opt\/projectsentinel\/accepted.sh/' /tmp/servicetemplate
+      sed -i 's/user=""/user=root/' /tmp/servicetemplate
+      echo Installing and enabling service
+      mv /tmp/servicetemplate /etc/init.d/loginpush
+      chmod +x /etc/init.d/loginpush
+      update-rc.d loginpush defaults
+      service loginpush start
+      echo If all was well the daemon should be active and started at boot.
 
+  elif [[ -d /lib/systemd/system ]]; then
+      wget https://pieterhouwen.info/zooi/systemctltemplate.txt -O /tmp/systemctltemplate
+      sed -i 's/command/\/opt\/projectsentinel\/accepted.sh/' /tmp/systemctltemplate
+      sed -i 's/desk/Sends push notifications to phone/' /tmp/systemctltemplate
+      echo Installing and enabling service
+      mv /tmp/systemctltemplate /lib/systemd/system/loginpush
+      systemctl enable --now loginpush
+  fi
 }
+
+function enablesmartnotifications() {
+  echo Oh yeah, RAID devices are NOT supported! :D
+  sleep 2
+  echo "Currently mounted disks are:"
+  df -h | grep dev | grep -v loop | grep -v tmpfs | grep -v udev
+  read -p "Select the disk which you would like to monitor" disk
+  if [[ ! -e $disk ]]; then
+    echo Invalid disk selected! Please check the name and try again.
+    enablesmartnotifications
+  else
+    echo Checking disk for SMART capabilities
+    # Check for smartctl
+    if [[ -e /usr/bin/smartctl ]]; then
+      :
+    else
+      if [[ -e /usr/bin/pacman ]]; then
+        pacman -Sy smartmontools
+      elif [[ -e /usr/bin/apt ]]; then
+        apt update -q
+        apt install -y smartmontools
+      fi
+    fi
+    if smartctl -H $disk | grep PASSED >/dev/null; then
+      echo SMART detected and disk is in good health.
+      echo Setting up scheduled task to run each sunday at 06:00
+      if [[ -e /etc/crontab ]]; then 
+      echo "00 6 * * 7 root /opt/projectsentinel/smartcheck" >>/etc/crontab
+      else
+      echo You'll have to set this up yourself.
+      fi
+    elif smartctl -H $disk | grep -i "lacks smart capabilities" >/dev/null; then
+      echo SMART is not supported on $disk. Bye.
+      exit 1
+  }
 
 buildmenu "SSH login detection" "SMART notifications"
 read -p "Please select your desired service" menunumber
 case $menunumber in
   1)
-#  enablesshnotifications
+   enablesshnotifications
   ;;
   2)
-#  enablesmartnotifications
+   enablesmartnotifications
   ;;
 esac

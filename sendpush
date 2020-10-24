@@ -24,6 +24,9 @@ login)
   # Priority "anything higher than 7"\ is highest
   curl -X POST "https://push.domain.tld/message?token=<apptoken>" -F "title=Login notificaiton" -F "message=Login detected for user $user at IP $ipadr" -F "priority=7"
   ;;
+  smart)
+  drive=$1
+  curl -X POST "https://push.domain.tld/message?token=<apptoken>" -F "title=SMART notification" -F "message=Drive $drive returned not PASSED, investigate." -F "priority=7"
  *)
  echo Invalid args!
  RTFM
@@ -40,4 +43,7 @@ login)
    sendmsg login $2 $3
  fi
 ;;
+smart)
+  sendmsg smart $1
+  ;;
 esac
