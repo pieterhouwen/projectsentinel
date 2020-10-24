@@ -152,8 +152,9 @@ function enablesmartnotifications() {
       if [[ -e /usr/bin/pacman ]]; then
         pacman -Sy smartmontools
       elif [[ -e /usr/bin/apt ]]; then
-        apt update -q
-        apt install -y smartmontools
+        echo Updating package repositories and installing smartmontools
+        apt update -qq
+        apt install -yq smartmontools
       fi
     fi
   fi
@@ -165,7 +166,8 @@ function enablesmartnotifications() {
       else
       echo You will have to set this up yourself.
       fi
-    elif smartctl -H $disk | grep -i "lacks smart capabilities" >/dev/null; then
+    fi
+    if smartctl -H $disk | grep -i "lacks smart capabilities" >/dev/null; then
       echo SMART is not supported on $disk. Bye.
       exit 1
     else
