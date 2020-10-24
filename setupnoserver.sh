@@ -159,10 +159,10 @@ function enablesmartnotifications() {
     if smartctl -H $disk | grep PASSED >/dev/null; then
       echo SMART detected and disk is in good health.
       echo Setting up scheduled task to run each sunday at 06:00
-      if [[ -e /etc/crontab ]]; then 
-      echo "00 6 * * 7 root /opt/projectsentinel/smartcheck" >>/etc/crontab
+      if [[ -e /etc/crontab ]]; then
+      echo "00 6 * * 7 root /opt/projectsentinel/smartcheck $disk" >>/etc/crontab
       else
-      echo You'll have to set this up yourself.
+      echo You will have to set this up yourself.
       fi
     elif smartctl -H $disk | grep -i "lacks smart capabilities" >/dev/null; then
       echo SMART is not supported on $disk. Bye.
