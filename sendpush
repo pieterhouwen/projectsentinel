@@ -27,6 +27,7 @@ login)
   smart)
   drive=$1
   curl -X POST "https://push.domain.tld/message?token=<apptoken>" -F "title=SMART notification" -F "message=Drive $drive returned not PASSED, investigate." -F "priority=7"
+  ;;
  *)
  echo Invalid args!
  RTFM

@@ -104,6 +104,10 @@ fi
 }
 testapptoken
 
+sed -i 's/\<apptoken\>/$apptoken/' sendpush
+sed -i 's/push.domain.tld/$gotify_server' sendpush
+
+
 # Let's create a menu for our sevices
 
 function enablesshnotifications() {
