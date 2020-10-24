@@ -47,7 +47,7 @@ function readuserinfo() {
 }
 readuserinfo
 echo Trying to login using specified details
-response=$(curl -u $gotify_username:$gotify_password https://$gotify_server/application | jq)
+response=$(curl -s -u $gotify_username:$gotify_password https://$gotify_server/application | jq)
 if echo $response | grep Unauthorized >/dev/null; then
   echo Wrong username or password!
   echo Please try again.
@@ -87,7 +87,7 @@ echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 
 function getapptoken() {
 echo Your currently active applications are:
-curl -u $gotify_username:$gotify_password https://$gotify_server/application | jq
+curl -s -u $gotify_username:$gotify_password https://$gotify_server/application | jq
 read -p "Please enter your app token: " apptoken
 }
 getapptoken
@@ -95,7 +95,7 @@ getapptoken
 function testapptoken() {
 echo Apptoken set to $apptoken .
 echo Trying to send message using apptoken
-testresponse=$(curl -X POST https://$gotify_server/message?token=$apptoken -F "title=Testnotification" -F "message=If you're seeing this the app is correctly configured" -F "priority=8" >/dev/null)
+testresponse=$(curl -s -X POST https://$gotify_server/message?token=$apptoken -F "title=Testnotification" -F "message=If you're seeing this the app is correctly configured" -F "priority=8" >/dev/null)
 if echo $testresponse | grep "provide a valid access token"; then
 echo Invalid token set!
 getapptoken
@@ -146,7 +146,6 @@ function enablesmartnotifications() {
   echo Oh yeah, RAID devices are NOT supported! :D
   sleep 2
   echo "Currently mounted disks are:"
-  # df -h | grep dev | grep -v loop | grep -v tmpfs | grep -v udev
   lsblk
   read -p "Select the disk which you would like to monitor: " disk
   if [[ ! -e /dev/$disk ]]; then
