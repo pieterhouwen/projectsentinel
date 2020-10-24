@@ -8,8 +8,8 @@ echo "$@"
 while read line;do
     case "$line" in
         *"Accepted"* )
-            user=$(echo $line | cut -d " " -f 4)
-            ip=$(echo $line | cut -d " " -f 6)
+            user=$(echo $line | cut -d " " -f 9)
+            ip=$(echo $line | cut -d " " -f 11)
             sendnotification login $user $ip
             ;;
     esac
