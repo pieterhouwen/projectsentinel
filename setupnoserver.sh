@@ -7,14 +7,15 @@ if [[ $(id -u) -gt 0 ]]; then
 fi
 
 # Check for JQ
+echo Checking for JQ.
 if [[ -e /usr/bin/jq ]]; then
   :
 else
   if [[ -e /usr/bin/pacman ]]; then
     pacman -Sy jq
   elif [[ -e /usr/bin/apt ]]; then
-    apt update -q
-    apt install -y jq
+    apt update -qq
+    apt install -yq jq
   fi
 fi
 
@@ -138,8 +139,9 @@ function enablesmartnotifications() {
   echo Oh yeah, RAID devices are NOT supported! :D
   sleep 2
   echo "Currently mounted disks are:"
-  df -h | grep dev | grep -v loop | grep -v tmpfs | grep -v udev
-  read -p "Select the disk which you would like to monitor" disk
+  # df -h | grep dev | grep -v loop | grep -v tmpfs | grep -v udev
+  lsblk
+  read -p "Select the disk which you would like to monitor: " disk
   if [[ ! -e $disk ]]; then
     echo Invalid disk selected! Please check the name and try again.
     enablesmartnotifications
@@ -176,7 +178,7 @@ function enablesmartnotifications() {
  }
 
 buildmenu "SSH login detection" "SMART notifications"
-read -p "Please select your desired service" menunumber
+read -p "Please select your desired service: " menunumber
 case $menunumber in
   1)
    enablesshnotifications
