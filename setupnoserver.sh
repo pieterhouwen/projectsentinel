@@ -156,6 +156,7 @@ function enablesmartnotifications() {
         apt install -y smartmontools
       fi
     fi
+  fi
     if smartctl -H $disk | grep PASSED >/dev/null; then
       echo SMART detected and disk is in good health.
       echo Setting up scheduled task to run each sunday at 06:00
@@ -167,8 +168,10 @@ function enablesmartnotifications() {
     elif smartctl -H $disk | grep -i "lacks smart capabilities" >/dev/null; then
       echo SMART is not supported on $disk. Bye.
       exit 1
+    else
+      :
     fi
-  }
+ }
 
 buildmenu "SSH login detection" "SMART notifications"
 read -p "Please select your desired service" menunumber
