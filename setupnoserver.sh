@@ -11,6 +11,7 @@ echo Checking for JQ.
 if [[ -e /usr/bin/jq ]]; then
   :
 else
+  echo JQ not installed, installing it for you.
   if [[ -e /usr/bin/pacman ]]; then
     pacman -Sy jq
   elif [[ -e /usr/bin/apt ]]; then
@@ -108,11 +109,13 @@ testapptoken
 function enablesshnotifications() {
   echo Copying sendpush to /usr/bin
   cp sendpush /usr/bin/sendpush
+  chmod +x /usr/bin/sendpush
   if [[ ! -d /opt/projectsentinel ]]; then
     echo Project sentinel folder not found, creating it.
     mkdir /opt/projectsentinel
   fi
   cp accepted.sh /opt/projectsentinel/accepted.sh
+  chmod +x /opt/projectsentinel/accepted.sh
   if [[ -e /usr/bin/systemd ]]; then
       wget https://pieterhouwen.info/zooi/servicetemplate.txt -O /tmp/servicetemplate
       sed -i 's/dir=""/dir=\/opt\/projectsentinel/' /tmp/servicetemplate
@@ -130,7 +133,7 @@ function enablesshnotifications() {
       sed -i 's/command/\/opt\/projectsentinel\/accepted.sh/' /tmp/systemctltemplate
       sed -i 's/desk/Sends push notifications to phone/' /tmp/systemctltemplate
       echo Installing and enabling service
-      mv /tmp/systemctltemplate /lib/systemd/system/loginpush
+      mv /tmp/systemctltemplate /lib/systemd/system/loginpush.service
       systemctl enable --now loginpush
   fi
 }
@@ -142,7 +145,7 @@ function enablesmartnotifications() {
   # df -h | grep dev | grep -v loop | grep -v tmpfs | grep -v udev
   lsblk
   read -p "Select the disk which you would like to monitor: " disk
-  if [[ ! -e $disk ]]; then
+  if [[ ! -e /dev/$disk ]]; then
     echo Invalid disk selected! Please check the name and try again.
     enablesmartnotifications
   else
@@ -160,17 +163,17 @@ function enablesmartnotifications() {
       fi
     fi
   fi
-    if smartctl -H $disk | grep PASSED >/dev/null; then
+    if smartctl -H /dev/$disk | grep PASSED >/dev/null; then
       echo SMART detected and disk is in good health.
       echo Setting up scheduled task to run each sunday at 06:00
       if [[ -e /etc/crontab ]]; then
-      echo "00 6 * * 7 root /opt/projectsentinel/smartcheck $disk" >>/etc/crontab
+      echo "00 6 * * 7 root /opt/projectsentinel/smartcheck /dev/$disk" >>/etc/crontab
       else
       echo You will have to set this up yourself.
       fi
     fi
-    if smartctl -H $disk | grep -i "lacks smart capability" >/dev/null; then
-      echo SMART is not supported on $disk. Bye.
+    if smartctl -H /dev/$disk | grep -i "lacks smart capability" >/dev/null; then
+      echo SMART is not supported on /dev/$disk. Bye.
       exit 1
     else
       :
