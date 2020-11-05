@@ -82,7 +82,7 @@ fi
 echo installing JQ.
 $installpkg jq
 
-if [[ $webserver == "nginx "]]; then
+if [[ $webserver == "nginx" ]]; then
   # Check for nginx
   if $querypkg nginx >/dev/null; then
     # Looks like nginx was found
@@ -96,7 +96,7 @@ if [[ $webserver == "nginx "]]; then
   fi
 elif [[ $webserver == "apache2" ]]; then
   # Check for Apache2
-  if $querypkg apache2 >/dev/null; then
+  if [[ -d /etc/apache2 ]]; then 
     echo Found Apache2
   else
     $installpkg apache2
