@@ -64,8 +64,12 @@ elif [[ -e /usr/bin/pacman ]]; then
 fi
 
 # Check installation of Docker
+if [[ -e /usr/bin/docker ]]; then
+  echo Found docker
+else
   echo Installing Docker, please wait...
   curl https://get.docker.com | /bin/sh
+fi
 
 # Check for installation of net-utils
 if [[ -e /usr/bin/nslookup ]]; then
