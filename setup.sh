@@ -57,21 +57,15 @@ done
 
 # Check what system we are running on
 if [[ -e /usr/bin/apt ]]; then
-  querypkg="dpkg --get-selections | grep "
-  installpkg="apt install -y"
+installpkg='apt install -y'
 elif [[ -e /usr/bin/pacman ]]; then
   querypkg="pacman -Q"
   installpkg="pacman -S"
 fi
 
 # Check installation of Docker
-if $querypkg docker >/dev/null; then
-  # Looks like docker is installed
-  echo Found docker
-else
   echo Installing Docker, please wait...
   curl https://get.docker.com | /bin/sh
-fi
 
 # Check for installation of net-utils
 if [[ -e /usr/bin/nslookup ]]; then
@@ -81,12 +75,8 @@ else
 fi
 
 # Check for JQ
-echo Checking for JQ.
-if $querypkg jq; then
-  echo Found JQ
-else
-    $installpkg jq
-fi
+echo installing JQ.
+$installpkg jq
 
 if [[ $webserver == "nginx "]]; then
   # Check for nginx
@@ -188,7 +178,7 @@ service apache2 restart
 fi
 
 if [[ $usessl == "true" ]] && [[ $webserver == "apache2" ]] ; then
-  if $querypkg certbot >/dev/null; then
+  if [[ -e /usr/bin/certbot ]]; then
     echo Found certbot
     echo Running certbot
     if certbot --apache; then
@@ -199,12 +189,8 @@ if [[ $usessl == "true" ]] && [[ $webserver == "apache2" ]] ; then
   else
     echo Installing certbot for apache2
     if [[ -e /usr/bin/apt ]]; then
-    # Check for existence of snap
-    if $querypkg snapd >/dev/null; then
-      echo Found snapd
-    else
+      # Check for existence of snap
       $installpkg snapd
-    fi
     snap install core
     snap refresh core
     snap install --classic certbot
@@ -235,12 +221,8 @@ if [[ $usessl == "true" ]] && [[ $webserver == "apache2" ]] ; then
   elif [[ $usessl == "true" ]] && [[ $webserver == "nginx" ]]; then
     if [[ -e /usr/bin/apt ]]; then
     # Check for existence of snap
-    if $querypkg snapd >/dev/null; then
-      echo Found snapd
-    else
       $installpkg snapd
-    fi
-    snap install core
+    install core
     snap refresh core
     snap install --classic certbot
     ln -s /snap/bin/certbot /usr/bin/certbot
