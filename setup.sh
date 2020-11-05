@@ -24,6 +24,14 @@ function RTFM() {
   exit 1
 }
 
+# Initialise some variables
+args=
+webserver=
+usessl=
+server=
+installpkg=
+newpass=
+
 while getopts ":w:sn:h" args
 do
 case $args in
@@ -84,7 +92,7 @@ $installpkg jq
 
 if [[ $webserver == "nginx" ]]; then
   # Check for nginx
-  if $querypkg nginx >/dev/null; then
+  if [[ -d /etc/nginx ]]; then
     # Looks like nginx was found
     echo Found nginx
   else
@@ -96,7 +104,7 @@ if [[ $webserver == "nginx" ]]; then
   fi
 elif [[ $webserver == "apache2" ]]; then
   # Check for Apache2
-  if [[ -d /etc/apache2 ]]; then 
+  if [[ -d /etc/apache2 ]]; then
     echo Found Apache2
   else
     $installpkg apache2
