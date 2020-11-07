@@ -9,10 +9,10 @@ fi
 function RTFM() {
   echo Usage: setup.sh -w [webserver] -s [ssl] -n [hostname] -h [help]
   echo
-  printf "-w        Use specified webserver. Accepted inputs are: apache2 or nginx"
-  printf "-s        Use SSL"
-  printf "-n        Use specified hostname, this needs to be a internet-reachable FQDN"
-  printf "-h        Show this help"
+  printf "-w        Use specified webserver. Accepted inputs are: apache2 or nginx\n"
+  printf "-s        Use SSL\n"
+  printf "-n        Use specified hostname, this needs to be a internet-reachable FQDN\n"
+  printf "-h        Show this help\n"
   echo
   echo "This program will check for (and install if necessery) the following programs:"
   echo
@@ -72,6 +72,7 @@ elif [[ -e /usr/bin/pacman ]]; then
 fi
 
 # Check installation of Docker
+echo Hit Docker check
 if [[ -e /usr/bin/docker ]]; then
   echo Found docker
 else
@@ -80,6 +81,7 @@ else
 fi
 
 # Check for installation of net-utils
+echo Hit Net-utils check
 if [[ -e /usr/bin/nslookup ]]; then
   echo Found nslookup
 else
@@ -114,9 +116,12 @@ fi
 if [[ -n $server ]]; then
   echo Please enter your FQDN on which to publish the push server.
   read server
+else
+  echo Hit server point
 fi
 
-if nslookup $server >/dev/null; then
+echo Hit domain point
+if [[ nslookup $server ]] >/dev/null; then
   echo Found domain.
 else
   echo Domain not found, please try again.
