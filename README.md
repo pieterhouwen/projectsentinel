@@ -1,9 +1,6 @@
 # projectsentinel
  Sends push notifications for unrecognized SSH logins
 
-# Note: This project is incomplete and will not work if run. Check back later
-
-
 # Usage
 You can choose to setup Project Sentinel with or without setting up your own push notification service (runs on Gotify).
 
