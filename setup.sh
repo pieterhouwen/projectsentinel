@@ -32,7 +32,7 @@ server=
 installpkg=
 newpass=
 
-while getopts ":w:sn:h" args
+while getopts "w:sn:h" args
 do
 case $args in
   w)
