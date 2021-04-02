@@ -17,6 +17,8 @@ else
   elif [[ -e /usr/bin/apt ]]; then
     apt update -qq
     apt install -yq jq
+  elif [[ -e /usr/bin/yum ]]; then
+    yum install -yq jq
   fi
 fi
 
