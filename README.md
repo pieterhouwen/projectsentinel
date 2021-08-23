@@ -16,6 +16,7 @@ Depending on the prospected usage this can be as small a machine as you'd like.
 Basically anything, this project has been tested on Arch Linux but should be compatible with Ubuntu also.
 
 # TODO
+* Add HTTP endpoint where sessions can be killed
 * Learn how to use arrays
 * Enable option to change port in gotify server selection.
 * Standardize for Docker images
