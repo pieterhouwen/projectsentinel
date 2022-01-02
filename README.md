@@ -1,3 +1,7 @@
+# NOTICE
+
+This project has been moved to https://github.com/ph-network-utils
+
 # projectsentinel
  Sends push notifications for unrecognized SSH logins
 
